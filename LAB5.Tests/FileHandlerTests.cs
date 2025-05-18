@@ -1,30 +1,53 @@
-﻿using LAB5.Services;
-using Xunit;
+﻿// Подключаем необходимые пространства имен
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using LAB5.Services;
+using System.IO;
 
-namespace LAB5.Tests;
-
-public class FileHandlerTests
+namespace LAB5.Tests  // Пространство имен для тестов проекта LAB5
 {
-    [Fact]
-    public void GenerateDrinks_CreatesCorrectAmount()
+    // Атрибут указывает, что этот класс содержит тестовые методы
+    [TestClass]
+    public class FileHandlerTests
     {
-        var handler = new FileHandler();
-        var drinks = handler.GenerateDrinks(50);
+        // Тест проверяет, что метод GenerateDrinks генерирует правильное количество напитков
+        [TestMethod]
+        public void GenerateDrinks_CreatesCorrectAmount()
+        {
+            // Создаем экземпляр класса FileHandler
+            var handler = new FileHandler();
 
-        Xunit.Assert.Equal(50, drinks.Count);
-    }
+            // Генерируем список из 50 напитков
+            var drinks = handler.GenerateDrinks(50);
 
-    [Fact]
-    public void SaveAndLoadDrinks_FilePersistsCorrectly()
-    {
-        var handler = new FileHandler();
-        var drinks = handler.GenerateDrinks(10);
-        string path = "test.json";
+            // Проверяем, что действительно создано 50 напитков
+            Assert.AreEqual(50, drinks.Count);
+        }
 
-        handler.SaveDrinksToFile(drinks, path);
-        var loaded = handler.LoadDrinksFromFile(path);
+        // Тест проверяет корректность сохранения и загрузки данных в/из файла
+        [TestMethod]
+        public void SaveAndLoadDrinks_FilePersistsCorrectly()
+        {
+            // Создаем экземпляр обработчика
+            var handler = new FileHandler();
 
-        Xunit.Assert.Equal(drinks.Count, loaded.Count);
-        File.Delete(path);
+            // Генерируем 10 напитков для теста
+            var drinks = handler.GenerateDrinks(10);
+
+            // Указываем путь к тестовому файлу
+            string path = "test.json";
+
+            // Сохраняем напитки в файл
+            handler.SaveDrinksToFile(drinks, path);
+
+            // Загружаем напитки обратно из файла
+            var loaded = handler.LoadDrinksFromFile(path);
+
+            // Сравниваем количество объектов до и после, чтобы убедиться, что файл сохранился правильно
+            Assert.AreEqual(drinks.Count, loaded.Count);
+
+            // Удаляем файл после теста, чтобы не засорять рабочую директорию
+            if (File.Exists(path))
+                File.Delete(path);
+        }
     }
 }
